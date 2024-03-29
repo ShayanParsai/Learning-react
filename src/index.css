@@ -1,0 +1,33 @@
+.navbar { /* The navbar on the TOP TOP of website */
+  font-size: 1.2rem;
+}
+
+.navbar-brand { /* Specifically the 'Arbitrage Tracker' Text */
+  padding: 14px 5px; 
+  font-size: 2rem; 
+}
+
+.text-stroke { /* Shadow around text */
+  text-shadow: 
+  -1px -1px 0 #000,  
+   1px -1px 0 #000,
+  -1px  1px 0 #000,
+   1px  1px 0 #000;
+}
+
+@media (min-width: 768px) { /* Desktop screens */
+  .email-form { /* Input Email form */
+      width: 50%;
+      margin-left: auto;
+      margin-right: auto;
+  }
+  .mobile-text { /* Hide the "Twitter" text on larger screens */
+      display: none;
+  }
+}
+
+@media (max-width: 768px) { /* Mobile screens */ 
+  .desktop-text { /* Hide the long text on mobile */
+      display: none;
+  }
+}
