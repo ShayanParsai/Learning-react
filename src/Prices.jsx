@@ -121,9 +121,9 @@ const Prices = () => {
                 {pair}
               </td>
               {exchanges.map((_, idx) => (
-                <td key={idx}>price</td>
+                <td key={idx}>price from websocket</td>
               ))}
-              <td className="last-column">Binance - Coinbase - 15%</td>
+              <td className="last-column">Cheapest exchange for pair - most expensive exchange for pair - diffrence in % on price</td>
             </tr>
           ))}
         </tbody>
@@ -133,4 +133,3 @@ const Prices = () => {
 };
 
 export default Prices;
-
