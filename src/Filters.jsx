@@ -19,7 +19,7 @@ const Filters = () => {
   return (
     <div className="container my-5">
       <div className="row justify-content-center my-3">
-        {/* Button Filter 1 */}
+        {/* Hide below 1% */}
         <div className="col-auto">
           <button
             className={`btn btn-lg text-stroke ${filterOneActive ? '' : 'btn-outline-primary'}`}
@@ -29,7 +29,7 @@ const Filters = () => {
             Hide below 1%
           </button>
         </div>
-        {/* Button Filter 2 */}
+        {/*  Hide below 0.5%  */}
         <div className="col-auto">
           <button
             className={`btn btn-lg text-stroke ${filterTwoActive ? '' : 'btn-outline-primary'}`}
