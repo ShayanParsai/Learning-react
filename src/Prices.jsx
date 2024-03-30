@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import btcLogo from './assets/BTC-USD.png';
 import ethLogo from './assets/ETH-USD.png';
@@ -47,89 +47,287 @@ import strkLogo from './assets/STRK-USD.png';
 import snxLogo from './assets/SNX-USD.png';
 
 const Prices = () => {
-  const exchanges = ["Binance", "Bybit", "Kraken", "Htx", "Coinbase"];
-  const pairs = ["BTC-USD", "ETH-USD", "SOL-USD", "AXS-USD", "DOGE-USD", "XRP-USD", "SAND-USD", "MANA-USD", "AVAX-USD", "LTC-USD", "LINK-USD",
-    "ADA-USD", "ICP-USD", "DOT-USD", "XLM-USD", "UNI-USD", "NEAR-USD", "TRX-USD", "MATIC-USD", "BCH-USD", "APT-USD", "MKR-USD", "LDO-USD", "SUI-USD",
-    "FIL-USD", "ETC-USD", "ATOM-USD", "ARB-USD", "IMX-USD", "RNDR-USD", "GRT-USD", "OP-USD", "INJ-USD", "FTM-USD", "TIA-USD", "FET-USD", "ALGO-USD",
-    "SEI-USD", "FLOW-USD", "GALA-USD", "AAVE-USD", "EGLD-USD", "DYDX-USD", "STRK-USD", "SNX-USD"];
+  const logos = { // ALL LOGOS FOR PAIRS
+    'BTC-USD': btcLogo,
+    'ETH-USD': ethLogo,
+    'SOL-USD': solLogo,
+    'AXS-USD': axsLogo,
+    'DOGE-USD': dogeLogo,
+    'XRP-USD': xrpLogo,
+    'SAND-USD': sandLogo,
+    'MANA-USD': manaLogo,
+    'AVAX-USD': avaxLogo,
+    'LTC-USD': ltcLogo,
+    'LINK-USD': linkLogo,
+    'ADA-USD': adaLogo,
+    'ICP-USD': icpLogo,
+    'DOT-USD': dotLogo,
+    'XLM-USD': xlmLogo,
+    'UNI-USD': uniLogo,
+    'NEAR-USD': nearLogo,
+    'TRX-USD': trxLogo,
+    'MATIC-USD': maticLogo,
+    'BCH-USD': bchLogo,
+    'APT-USD': aptLogo,
+    'MKR-USD': mkrLogo,
+    'LDO-USD': ldoLogo,
+    'SUI-USD': suiLogo,
+    'FIL-USD': filLogo,
+    'ETC-USD': etcLogo,
+    'ATOM-USD': atomLogo,
+    'ARB-USD': arbLogo,
+    'IMX-USD': imxLogo,
+    'RNDR-USD': rndrLogo,
+    'GRT-USD': grtLogo,
+    'OP-USD': opLogo,
+    'INJ-USD': injLogo,
+    'FTM-USD': ftmLogo,
+    'TIA-USD': tiaLogo,
+    'FET-USD': fetLogo,
+    'ALGO-USD': algoLogo,
+    'SEI-USD': seiLogo,
+    'FLOW-USD': flowLogo,
+    'GALA-USD': galaLogo,
+    'AAVE-USD': aaveLogo,
+    'EGLD-USD': egldLogo,
+    'DYDX-USD': dydxLogo,
+    'STRK-USD': strkLogo,
+    'SNX-USD': snxLogo
+  };
+  const pairs = [ // ALL PAIRS
+    'btcusdt', 'ethusdt', 'solusdt',
+    'axsusdt', 'dogeusdt', 'xrpusdt', 'sandusdt', 'manausdt', 'avaxusdt', 'ltcusdt',
+    'linkusdt', 'adausdt', 'icpusdt', 'dotusdt', 'xlmusdt', 'uniusdt', 'nearusdt', 
+    'trxusdt', 'maticusdt', 'bchusdt', 'aptusdt', 'filusdt', 'etcusdt', 'atomusdt', 
+    'arbusdt', 'imxusdt', 'rndrusdt', 'grtusdt', 'opusdt', 'injusdt', 
+    'ftmusdt', 'mkrusdt', 'ldousdt', 'tiausdt', 'fetusdt', 'suiusdt', 
+    'algousdt', 'seiusdt', 'flowusdt', 'galausdt', 'aaveusdt', 'egldusdt', 
+    'dydxusdt', 'strkusdt', 'snxusdt'
+  ]; 
+  const [prices, setPrices] = useState({ // ADD NEW PAIRS FOR EACH EXCHANGE
+    binance: {
+      btcusdt: 'Loading...',
+      ethusdt: 'Loading...',
+      solusdt: 'Loading...',
+      axsusdt: 'Loading...',
+      dogeusdt: 'Loading...',
+      xrpusdt: 'Loading...',
+      sandusdt: 'Loading...',
+      manausdt: 'Loading...',
+      avaxusdt: 'Loading...',
+      ltcusdt: 'Loading...',
+      linkusdt: 'Loading...',
+      adausdt: 'Loading...',
+      icpusdt: 'Loading...',
+      dotusdt: 'Loading...',
+      xlmusdt: 'Loading...',
+      uniusdt: 'Loading...',
+      nearusdt: 'Loading...',
+      trxusdt: 'Loading...',
+      maticusdt: 'Loading...',
+      bchusdt: 'Loading...',
+      aptusdt: 'Loading...',
+      filusdt: 'Loading...',
+      etcusdt: 'Loading...',
+      atomusdt: 'Loading...',
+      arbusdt: 'Loading...',
+      imxusdt: 'Loading...',
+      rndrusdt: 'Loading...',
+      grtusdt: 'Loading...',
+      opusdt: 'Loading...',
+      injusdt: 'Loading...',
+      ftmusdt: 'Loading...',
+      mkrusdt: 'Loading...',
+      ldousdt: 'Loading...',
+      tiausdt: 'Loading...',
+      fetusdt: 'Loading...',
+      suiusdt: 'Loading...',
+      algousdt: 'Loading...',
+      seiusdt: 'Loading...',
+      flowusdt: 'Loading...',
+      galausdt: 'Loading...',
+      aaveusdt: 'Loading...',
+      egldusdt: 'Loading...',
+      dydxusdt: 'Loading...',
+      strkusdt: 'Loading...',
+      snxusdt: 'Loading...',
+    },
+    bybit: {
+      btcusdt: 'Loading...',
+      ethusdt: 'Loading...',
+      solusdt: 'Loading...',
+      axsusdt: 'Loading...',
+      dogeusdt: 'Loading...',
+      xrpusdt: 'Loading...',
+      sandusdt: 'Loading...',
+      manausdt: 'Loading...',
+      avaxusdt: 'Loading...',
+      ltcusdt: 'Loading...',
+      linkusdt: 'Loading...',
+      adausdt: 'Loading...',
+      icpusdt: 'Loading...',
+      dotusdt: 'Loading...',
+      xlmusdt: 'Loading...',
+      uniusdt: 'Loading...',
+      nearusdt: 'Loading...',
+      trxusdt: 'Loading...',
+      maticusdt: 'Loading...',
+      bchusdt: 'Loading...',
+      aptusdt: 'Loading...',
+      filusdt: 'Loading...',
+      etcusdt: 'Loading...',
+      atomusdt: 'Loading...',
+      arbusdt: 'Loading...',
+      imxusdt: 'Loading...',
+      rndrusdt: 'Loading...',
+      grtusdt: 'Loading...',
+      opusdt: 'Loading...',
+      injusdt: 'Loading...',
+      ftmusdt: 'Loading...',
+      mkrusdt: 'Loading...',
+      ldousdt: 'Loading...',
+      tiausdt: 'Loading...',
+      fetusdt: 'Loading...',
+      suiusdt: 'Loading...',
+      algousdt: 'Loading...',
+      seiusdt: 'Loading...',
+      flowusdt: 'Loading...',
+      galausdt: 'Loading...',
+      aaveusdt: 'Loading...',
+      egldusdt: 'Loading...',
+      dydxusdt: 'Loading...',
+      strkusdt: 'Loading...',
+      snxusdt: 'Loading...',
+    }
+  });
+  const exchanges = ['Binance', 'Bybit']; // ADD NEW EXCHANGES
+  
+  useEffect(() => { // WEBSOCKET CONNECTION FOR EXCHANGES
+    const getDecimalPlaces = (price) => {
+        if (price >= 250) {
+            return 1;
+        } else if (price >= 50) {
+            return 2;
+        } else if (price > 0.99) {
+            return 3;
+        } else {
+            return 4;
+        }
+    };
 
-    const logos = {
-        'BTC-USD': btcLogo,
-        'ETH-USD': ethLogo,
-        'SOL-USD': solLogo,
-        'AXS-USD': axsLogo,
-        'DOGE-USD': dogeLogo,
-        'XRP-USD': xrpLogo,
-        'SAND-USD': sandLogo,
-        'MANA-USD': manaLogo,
-        'AVAX-USD': avaxLogo,
-        'LTC-USD': ltcLogo,
-        'LINK-USD': linkLogo,
-        'ADA-USD': adaLogo,
-        'ICP-USD': icpLogo,
-        'DOT-USD': dotLogo,
-        'XLM-USD': xlmLogo,
-        'UNI-USD': uniLogo,
-        'NEAR-USD': nearLogo,
-        'TRX-USD': trxLogo,
-        'MATIC-USD': maticLogo,
-        'BCH-USD': bchLogo,
-        'APT-USD': aptLogo,
-        'MKR-USD': mkrLogo,
-        'LDO-USD': ldoLogo,
-        'SUI-USD': suiLogo,
-        'FIL-USD': filLogo,
-        'ETC-USD': etcLogo,
-        'ATOM-USD': atomLogo,
-        'ARB-USD': arbLogo,
-        'IMX-USD': imxLogo,
-        'RNDR-USD': rndrLogo,
-        'GRT-USD': grtLogo,
-        'OP-USD': opLogo,
-        'INJ-USD': injLogo,
-        'FTM-USD': ftmLogo,
-        'TIA-USD': tiaLogo,
-        'FET-USD': fetLogo,
-        'ALGO-USD': algoLogo,
-        'SEI-USD': seiLogo,
-        'FLOW-USD': flowLogo,
-        'GALA-USD': galaLogo,
-        'AAVE-USD': aaveLogo,
-        'EGLD-USD': egldLogo,
-        'DYDX-USD': dydxLogo,
-        'STRK-USD': strkLogo,
-        'SNX-USD': snxLogo
-      };
+    const binanceWs = new WebSocket('wss://stream.binance.com:9443/stream'); // Binance WebSocket Setup
+    binanceWs.onopen = () => {
+        binanceWs.send(JSON.stringify({
+            method: "SUBSCRIBE",
+            params: Object.keys(prices.binance).map(pair => `${pair}@aggTrade`),
+            id: 1
+        }));
+    };
+    binanceWs.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.data && message.stream) {
+            const pair = message.stream.split('@')[0];
+            const price = parseFloat(message.data.p);
+            const decimalPlaces = getDecimalPlaces(price);
+            setPrices(prevPrices => ({
+                ...prevPrices,
+                binance: {
+                    ...prevPrices.binance,
+                    [pair]: price.toFixed(decimalPlaces),
+                },
+            }));
+        }
+    };
 
-  return (
+    const bybitWs = new WebSocket('wss://stream.bybit.com/v5/public/linear'); // Bybit WebSocket Setup
+    bybitWs.onopen = () => {
+        bybitWs.send(JSON.stringify({
+            op: "subscribe",
+            args: Object.keys(prices.bybit).map(pair => `tickers.${pair.toUpperCase()}`)
+        }));
+    };
+    bybitWs.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.topic && message.data) {
+            const symbol = message.topic.split('.')[1].toLowerCase();
+            if (message.data.lastPrice) {
+                const lastPrice = parseFloat(message.data.lastPrice);
+                const decimalPlaces = getDecimalPlaces(lastPrice);
+                setPrices(prevPrices => ({
+                    ...prevPrices,
+                    bybit: {
+                        ...prevPrices.bybit,
+                        [symbol]: lastPrice.toFixed(decimalPlaces),
+                    },
+                }));
+            }
+        }
+    };
+
+
+    return () => {
+        binanceWs.close();
+        bybitWs.close();
+    };
+}, []);
+
+  return ( // The Table setup
     <div className="container mb-5">
       <table className="table table-striped table-bordered">
         <thead className="border border-black">
           <tr>
-            <th>Currency Pair</th>
-            {exchanges.map((exchange, index) => (
-              <th key={index}>{exchange}</th>
+            <th>Currency Pairs in USD</th>
+            {exchanges.map((exchange) => (
+              <th key={exchange}>{exchange}</th>
             ))}
-            <th className="last-column">Buy at - Sell at - Price Difference</th>
+            <th>Buy at - Sell at - Percentage diff</th>
           </tr>
         </thead>
         <tbody className="border border-black">
-          {pairs.map((pair, index) => (
-            <tr key={index}>
+          {pairs.map((pair) => (
+            <tr key={pair}>
               <td>
-                <img src={logos[pair]} alt={pair} style={{ width: '23px', marginRight: '9px' }} />
-                {pair}
+                <img src={logos[pair.toUpperCase().replace('USDT', '-USD')]} alt={pair} style={{ width: '23px', marginRight: '13px' }} />
+                {pair.replace('usdt', '').toUpperCase()}
               </td>
-              {exchanges.map((_, idx) => (
-                <td key={idx}>price from websocket</td>
-              ))}
-              <td className="last-column">Cheapest exchange for pair - most expensive exchange for pair - diffrence in % on price</td>
+              {exchanges.map((exchange) => {
+                const price = prices[exchange.toLowerCase()][pair];
+                return (
+                  <td key={exchange + pair}>
+                    {price !== 'Loading...' ? `$${price}` : 'Loading...'}
+                  </td>
+                );
+              })}
+              <td>
+                {(() => {
+                  const priceData = exchanges.map((exchange) => ({
+                    name: exchange,
+                    price: parseFloat(prices[exchange.toLowerCase()][pair]),
+                  })).filter(({ price }) => !isNaN(price));
+  
+                  if (priceData.length === 0) return 'Loading...';
+  
+                  const minPriceData = priceData.reduce((min, data) => (data.price < min.price ? data : min), priceData[0]);
+                  const maxPriceData = priceData.reduce((max, data) => (data.price > max.price ? data : max), priceData[0]);
+                  const diffPercentage = (((maxPriceData.price - minPriceData.price) / minPriceData.price) * 100).toFixed(2);
+  
+                  return (
+                    <>
+                      <span className="text-success fw-bold">{minPriceData.name}</span>
+                      {' --> '}
+                      <span className="text-danger fw-bold">{maxPriceData.name}</span>
+                      {': '}
+                      <span className="text-dark fw-bold">{diffPercentage}%</span>
+                    </>
+                  );
+                })()}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
-  );
+  );   
 };
 
 export default Prices;
