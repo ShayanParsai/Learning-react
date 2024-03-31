@@ -47,7 +47,7 @@ import strkLogo from './assets/STRK-USD.png';
 import snxLogo from './assets/SNX-USD.png';
 
 const Prices = () => {
-  const logos = { // ALL LOGOS FOR PAIRS
+  const logos = { // All logos
     'BTC-USD': btcLogo,
     'ETH-USD': ethLogo,
     'SOL-USD': solLogo,
@@ -94,7 +94,7 @@ const Prices = () => {
     'STRK-USD': strkLogo,
     'SNX-USD': snxLogo
   };
-  const pairs = [ // ALL PAIRS
+  const pairs = [ // All pairs
     'btcusdt', 'ethusdt', 'solusdt',
     'axsusdt', 'dogeusdt', 'xrpusdt', 'sandusdt', 'manausdt', 'avaxusdt', 'ltcusdt',
     'linkusdt', 'adausdt', 'icpusdt', 'dotusdt', 'xlmusdt', 'uniusdt', 'nearusdt', 
@@ -104,7 +104,7 @@ const Prices = () => {
     'algousdt', 'seiusdt', 'flowusdt', 'galausdt', 'aaveusdt', 'egldusdt', 
     'dydxusdt', 'strkusdt', 'snxusdt'
   ]; 
-  const [prices, setPrices] = useState({ // ADD NEW PAIRS FOR EACH EXCHANGE
+  const [prices, setPrices] = useState({ // List of the pairs we want to fetch per exchange
     binance: {
       btcusdt: 'Loading...',
       ethusdt: 'Loading...',
@@ -200,9 +200,9 @@ const Prices = () => {
       snxusdt: 'Loading...',
     }
   });
-  const exchanges = ['Binance', 'Bybit']; // ADD NEW EXCHANGES
+  const exchanges = ['Binance', 'Bybit']; // List of exchanges
   
-  useEffect(() => { // WEBSOCKET CONNECTION FOR EXCHANGES
+  useEffect(() => { // Websocket connections
     const getDecimalPlaces = (price) => {
         if (price >= 250) {
             return 1;
@@ -264,7 +264,6 @@ const Prices = () => {
         }
     };
 
-
     return () => {
         binanceWs.close();
         bybitWs.close();
@@ -284,46 +283,44 @@ const Prices = () => {
           </tr>
         </thead>
         <tbody className="border border-black">
-          {pairs.map((pair) => (
+          {pairs.map((pair) => {
+          const priceData = exchanges.map((exchange) => ({
+            name: exchange,
+            price: parseFloat(prices[exchange.toLowerCase()][pair]),
+          })).filter(({ price }) => !isNaN(price));
+          if (priceData.length === 0) return <tr><td colSpan="exchanges.length + 2">Loading...</td></tr>;
+          const minPriceData = priceData.reduce((min, data) => (data.price < min.price ? data : min), priceData[0]);
+          const maxPriceData = priceData.reduce((max, data) => (data.price > max.price ? data : max), priceData[0]);
+          const diffPercentage = (((maxPriceData.price - minPriceData.price) / minPriceData.price) * 100).toFixed(2);
+          const rowStyle = {
+            backgroundColor: diffPercentage > 0.5 ? 'lightgreen' : diffPercentage > 0.25 ? '#FFD580' : 'white',
+          };
+          return (
             <tr key={pair}>
-              <td>
+              <td style={rowStyle}>
                 <img src={logos[pair.toUpperCase().replace('USDT', '-USD')]} alt={pair} style={{ width: '23px', marginRight: '13px' }} />
                 {pair.replace('usdt', '').toUpperCase()}
               </td>
               {exchanges.map((exchange) => {
                 const price = prices[exchange.toLowerCase()][pair];
                 return (
-                  <td key={exchange + pair}>
+                  <td key={exchange + pair} style={rowStyle}>
                     {price !== 'Loading...' ? `$${price}` : 'Loading...'}
                   </td>
                 );
               })}
-              <td>
-                {(() => {
-                  const priceData = exchanges.map((exchange) => ({
-                    name: exchange,
-                    price: parseFloat(prices[exchange.toLowerCase()][pair]),
-                  })).filter(({ price }) => !isNaN(price));
-  
-                  if (priceData.length === 0) return 'Loading...';
-  
-                  const minPriceData = priceData.reduce((min, data) => (data.price < min.price ? data : min), priceData[0]);
-                  const maxPriceData = priceData.reduce((max, data) => (data.price > max.price ? data : max), priceData[0]);
-                  const diffPercentage = (((maxPriceData.price - minPriceData.price) / minPriceData.price) * 100).toFixed(2);
-  
-                  return (
-                    <>
-                      <span className="text-success fw-bold">{minPriceData.name}</span>
-                      {' --> '}
-                      <span className="text-danger fw-bold">{maxPriceData.name}</span>
-                      {': '}
-                      <span className="text-dark fw-bold">{diffPercentage}%</span>
-                    </>
-                  );
-                })()}
+              <td style={rowStyle}>
+                <>
+                  <span className="text-success fw-bold">{minPriceData.name}</span>
+                  {' --> '}
+                  <span className="text-danger fw-bold">{maxPriceData.name}</span>
+                  {': '}
+                  <span className="text-dark fw-bold">{diffPercentage}%</span>
+                </>
               </td>
             </tr>
-          ))}
+          );
+        })}
         </tbody>
       </table>
     </div>
