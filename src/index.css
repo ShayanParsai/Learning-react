@@ -10,7 +10,7 @@
   font-family: Arial, sans-serif; 
   font-size: 16px;
   border-collapse: separate;
-  border-spacing: 7px;
+  border-spacing: 5px;
 }
 
 .custom-table td, .custom-table th { /* specificly the boxes of the tables */
@@ -36,4 +36,8 @@
   width: auto;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.background-ofall { /* Background colour of whole page */
+  background-color: #afafaf; /* Adjust the color code to achieve the desired very light gray */
 }

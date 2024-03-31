@@ -10,7 +10,7 @@ function App() {
 
   return (
     <>
-      <div className="bg-light">
+      <div className="background-ofall">
         <Header/>
         <Semiheader/>
         <Filters/>
