@@ -14,9 +14,8 @@ function Semiheader() {
                             Arbitrage tracker will find you the best deals.
                             <br /><strong className="text-success">Buy Low</strong> on one exchange, <strong className="text-danger">Sell Higher</strong> on another.<br />
                         </p>
-                        <button className="btn btn-primary btn-lg text-stroke" style={{ border: '2px solid black' }} id="startTrackingButton">Start Tracking</button>
                     </div>
-                    <img className="img-fluid d-none d-lg-block" src={arbitrageTrackerLogo} alt="" style={{ width: '20%' }} />
+                    <img className="img-fluid d-none d-lg-block" src={arbitrageTrackerLogo} alt="" style={{ width: '15%' }} />
                 </div>
             </div>
         </section>
