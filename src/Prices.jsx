@@ -198,9 +198,56 @@ const Prices = () => {
       dydxusdt: 'Loading...',
       strkusdt: 'Loading...',
       snxusdt: 'Loading...',
+    },
+    mexc: {
+      btcusdt: 'Loading...',
+      ethusdt: 'Loading...',
+      solusdt: 'Loading...',
+      axsusdt: 'Loading...',
+      dogeusdt: 'Loading...',
+      xrpusdt: 'Loading...',
+      sandusdt: 'Loading...',
+      manausdt: 'Loading...',
+      avaxusdt: 'Loading...',
+      ltcusdt: 'Loading...',
+      linkusdt: 'Loading...',
+      adausdt: 'Loading...',
+      icpusdt: 'Loading...',
+      dotusdt: 'Loading...',
+      xlmusdt: 'Loading...',
+      uniusdt: 'Loading...',
+      nearusdt: 'Loading...',
+      trxusdt: 'Loading...',
+      maticusdt: 'Loading...',
+      bchusdt: 'Loading...',
+      aptusdt: 'Loading...',
+      filusdt: 'Loading...',
+      etcusdt: 'Loading...',
+      atomusdt: 'Loading...',
+      arbusdt: 'Loading...',
+      imxusdt: 'Loading...',
+      rndrusdt: 'Loading...',
+      grtusdt: 'Loading...',
+      opusdt: 'Loading...',
+      injusdt: 'Loading...',
+      ftmusdt: 'Loading...',
+      mkrusdt: 'Loading...',
+      ldousdt: 'Loading...',
+      tiausdt: 'Loading...',
+      fetusdt: 'Loading...',
+      suiusdt: 'Loading...',
+      algousdt: 'Loading...',
+      seiusdt: 'Loading...',
+      flowusdt: 'Loading...',
+      galausdt: 'Loading...',
+      aaveusdt: 'Loading...',
+      egldusdt: 'Loading...',
+      dydxusdt: 'Loading...',
+      strkusdt: 'Loading...',
+      snxusdt: 'Loading...',
     }
   });
-  const exchanges = ['Binance', 'Bybit']; // List of exchanges
+  const exchanges = ['Binance', 'Bybit', 'Mexc']; // List of exchanges
   
   useEffect(() => { // Websocket connections
     const getDecimalPlaces = (price) => {
@@ -215,7 +262,7 @@ const Prices = () => {
         }
     };
 
-    const binanceWs = new WebSocket('wss://stream.binance.com:9443/stream'); // Binance WebSocket Setup
+    const binanceWs = new WebSocket('wss://stream.binance.com:9443/stream');     // Binance WebSocket Setup
     binanceWs.onopen = () => {
         binanceWs.send(JSON.stringify({
             method: "SUBSCRIBE",
@@ -237,6 +284,9 @@ const Prices = () => {
                 },
             }));
         }
+    };
+    binanceWs.onerror = (error) => {
+      console.error('Binance WebSocket Error:', error);
     };
 
     const bybitWs = new WebSocket('wss://stream.bybit.com/v5/public/linear'); // Bybit WebSocket Setup
@@ -263,40 +313,84 @@ const Prices = () => {
             }
         }
     };
-
-    return () => {
-        binanceWs.close();
-        bybitWs.close();
+    bybitWs.onerror = (error) => {
+      console.error('Bybit WebSocket Error:', error);
     };
+
+    const chunkPairs = (pairsArray, chunkSize) => { // Mexc WebSocket Setup
+      let result = [];
+      for (let i = 0; i < pairsArray.length; i += chunkSize) {
+        result.push(pairsArray.slice(i, i + chunkSize));
+      }
+      return result;
+    }; 
+    const pairsChunks = chunkPairs(pairs, 30);
+    pairsChunks.forEach((pairsChunk, index) => {
+      const mexcWs = new WebSocket('wss://wbs.mexc.com/ws');
+      mexcWs.onopen = () => {
+        pairsChunk.forEach(pair => {
+          mexcWs.send(JSON.stringify({
+            "method": "SUBSCRIPTION",
+            "params": [`spot@public.deals.v3.api@${pair.toUpperCase()}`]
+          }));
+        });
+      };
+
+    mexcWs.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message && message.d && message.d.deals) {
+        const { s: symbol, d: { deals } } = message;
+        const lastDeal = deals[deals.length - 1];
+        const price = parseFloat(lastDeal.p);
+        const decimalPlaces = getDecimalPlaces(price);
+        setPrices(prevPrices => ({
+          ...prevPrices,
+          mexc: {
+            ...prevPrices.mexc,
+            [symbol.toLowerCase()]: price.toFixed(decimalPlaces),
+          },
+        }));
+      }};
+    mexcWs.onerror = (error) => {
+      console.error(`MexC WebSocket Error for chunk ${index}:`, error);
+    };
+
+    // Closing down all Websockets
+    return () => mexcWs.close();});
+    return () => { binanceWs.close(); bybitWs.close();};
 }, []);
 
   return ( // The Table setup
     <div className="container mb-5">
-      <table className="table table-striped table-bordered">
+      <table className="table table-bordered custom-table">
         <thead className="border border-black">
-          <tr>
-            <th>Currency Pairs in USD</th>
+          {/* <--Titles--> */}
+          <tr> 
+            <th>Pairs to USDT</th>
             {exchanges.map((exchange) => (
               <th key={exchange}>{exchange}</th>
             ))}
-            <th>Buy at - Sell at - Percentage diff</th>
-          </tr>
+            <th>Buy at - Sell at - Diff</th>
+          </tr> 
+          {/* <--Titles--> */}
         </thead>
         <tbody className="border border-black">
-          {pairs.map((pair) => {
+          {/* <--Content Collumns--> */}  
+          {pairs.map((pair, index) => {
           const priceData = exchanges.map((exchange) => ({
             name: exchange,
             price: parseFloat(prices[exchange.toLowerCase()][pair]),
           })).filter(({ price }) => !isNaN(price));
-          if (priceData.length === 0) return <tr><td colSpan="exchanges.length + 2">Loading...</td></tr>;
+
+          if (priceData.length === 0) return <tr key={`${pair}-${index}`}><td colSpan="exchanges.length + 2">Fetching</td></tr>;
           const minPriceData = priceData.reduce((min, data) => (data.price < min.price ? data : min), priceData[0]);
           const maxPriceData = priceData.reduce((max, data) => (data.price > max.price ? data : max), priceData[0]);
           const diffPercentage = (((maxPriceData.price - minPriceData.price) / minPriceData.price) * 100).toFixed(2);
           const rowStyle = {
-            backgroundColor: diffPercentage > 0.5 ? 'lightgreen' : diffPercentage > 0.25 ? '#FFD580' : 'white',
+            backgroundColor: diffPercentage > 0.999 ? '#78FF8D ' : diffPercentage > 0.499 ? '#FFCB5E' : '#FBFBFB',
           };
           return (
-            <tr key={pair}>
+            <tr key={`${pair}-${index}`}>
               <td style={rowStyle}>
                 <img src={logos[pair.toUpperCase().replace('USDT', '-USD')]} alt={pair} style={{ width: '23px', marginRight: '13px' }} />
                 {pair.replace('usdt', '').toUpperCase()}
@@ -304,7 +398,7 @@ const Prices = () => {
               {exchanges.map((exchange) => {
                 const price = prices[exchange.toLowerCase()][pair];
                 return (
-                  <td key={exchange + pair} style={rowStyle}>
+                  <td key={`${exchange}-${pair}`} style={rowStyle}>
                     {price !== 'Loading...' ? `$${price}` : 'Loading...'}
                   </td>
                 );
@@ -312,7 +406,7 @@ const Prices = () => {
               <td style={rowStyle}>
                 <>
                   <span className="text-success fw-bold">{minPriceData.name}</span>
-                  {' --> '}
+                  {' - '}
                   <span className="text-danger fw-bold">{maxPriceData.name}</span>
                   {': '}
                   <span className="text-dark fw-bold">{diffPercentage}%</span>
@@ -321,6 +415,7 @@ const Prices = () => {
             </tr>
           );
         })}
+        {/* <--Content Collumns--> */}  
         </tbody>
       </table>
     </div>

@@ -1,0 +1,8 @@
+.navbar { /* The navbar on the TOP TOP of website */
+    font-size: 1.2rem;
+}
+  
+.navbar-brand { /* Specifically the 'Arbitrage Tracker' Text */
+padding: 14px 5px; 
+font-size: 2rem; 
+}

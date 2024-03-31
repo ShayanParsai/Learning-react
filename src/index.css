@@ -1,12 +1,3 @@
-.navbar { /* The navbar on the TOP TOP of website */
-  font-size: 1.2rem;
-}
-
-.navbar-brand { /* Specifically the 'Arbitrage Tracker' Text */
-  padding: 14px 5px; 
-  font-size: 2rem; 
-}
-
 .text-stroke { /* Shadow around text */
   text-shadow: 
   -1px -1px 0 #000,  
@@ -15,19 +6,34 @@
    1px  1px 0 #000;
 }
 
-@media (min-width: 768px) { /* Desktop screens */
-  .email-form { /* Input Email form */
-      width: 50%;
-      margin-left: auto;
-      margin-right: auto;
-  }
-  .mobile-text { /* Hide the "Twitter" text on larger screens */
-      display: none;
-  }
+.custom-table { /* The entire table */
+  font-family: Arial, sans-serif; 
+  font-size: 16px;
+  border-collapse: separate;
+  border-spacing: 7px;
 }
 
-@media (max-width: 768px) { /* Mobile screens */ 
-  .desktop-text { /* Hide the long text on mobile */
-      display: none;
-  }
+.custom-table td, .custom-table th { /* specificly the boxes of the tables */
+  padding: 2px;
+  text-align: center;
+  border: 1px solid #505050;
+}
+
+.custom-table thead th { /* specificly the title boxes of the tables */
+  position: sticky;
+  top: 3px;
+  background-color: hsl(108, 100%, 85%);
+  z-index: 10;
+}
+
+.custom-table th:first-child, .custom-table td:first-child { /* The pair boxes */
+  width: 165px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.custom-table th:last-child, .custom-table td:last-child { /* The Arbitrage boxes */
+  width: auto;
+  white-space: nowrap;
+  overflow: hidden;
 }
