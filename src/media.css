@@ -18,4 +18,7 @@
     .custom-table td:nth-child(4), .custom-table th:nth-child(4) {
       display: none;
     }
+    #donation-counter {
+      display: none;
+    }
   }
