@@ -119,6 +119,11 @@ const Prices = () => {
   ]; 
   const exchanges = ['Binance', 'Bybit', 'Mexc']; // List of exchanges
   const [prices, setPrices] = useState(initializePrices(pairs, exchanges));
+
+  const [filterBadDeals, setFilterBadDeals] = useState(false); // Filter Button
+  const toggleFilter = () => { 
+    setFilterBadDeals(!filterBadDeals);
+  };
   
   useEffect(() => { // Websocket connections
     const getDecimalPlaces = (price) => {
@@ -232,62 +237,76 @@ const Prices = () => {
 }, []);
 
   return ( // The Table setup
-    <div className="container mb-5 border border-dark rounded-4 border-3 py-3 px-4 bg-light">
-      <table className="table table-bordered custom-table">
-        <thead className="border border-black">
+    <div className="p-3 mt-4">
+      <div className="container mb-5 border border-dark rounded-4 border-3 py-3 px-4 bg-light">
+        {/* <--Filter Button--> */}
+        <div className="d-flex justify-content-center mb-3">
+          <button className="btn btn-primary border-dark rounded-2 border-2 text-stroke" onClick={toggleFilter}>
+            {filterBadDeals ? 'Show All Deals' : 'Hide Bad Deals'}
+          </button>
+        </div>
+        {/* <--Filter Button--> */}
+        <table className="table table-bordered custom-table">
           {/* <--Titles--> */}
-          <tr> 
-            <th>Pairs to USDT</th>
-            {exchanges.map((exchange) => (
-              <th key={exchange}>{exchange}</th>
-            ))}
-            <th>Buy at - Sell at - Diff</th>
-          </tr> 
+          <thead className="border border-black">
+            <tr> 
+              <th>Pairs to USDT</th>
+              {exchanges.map((exchange) => (
+                <th key={exchange}>{exchange}</th>
+              ))}
+              <th>Buy at - Sell at - Diff</th>
+            </tr> 
+          </thead>
           {/* <--Titles--> */}
-        </thead>
-        <tbody className="border border-black">
-          {/* <--Content Collumns--> */}  
-          {pairs.map((pair, index) => {
-          const priceData = exchanges.map((exchange) => ({
-            name: exchange,
-            price: parseFloat(prices[exchange.toLowerCase()][pair]),
-          })).filter(({ price }) => !isNaN(price));
-          if (priceData.length === 0) return <tr key={`${pair}-${index}`}><td colSpan="exchanges.length + 2">Fetching</td></tr>;
-          const minPriceData = priceData.reduce((min, data) => (data.price < min.price ? data : min), priceData[0]);
-          const maxPriceData = priceData.reduce((max, data) => (data.price > max.price ? data : max), priceData[0]);
-          const diffPercentage = (((maxPriceData.price - minPriceData.price) / minPriceData.price) * 100).toFixed(2);
-          const rowStyle = {
-            backgroundColor: diffPercentage > 0.999 ? '#78FF8D ' : diffPercentage > 0.499 ? '#FFCB5E' : '#FBFBFB',
-          };
-          return (
-            <tr key={`${pair}-${index}`}>
-              <td style={rowStyle}>
-                <img src={logos[pair.toUpperCase().replace('USDT', '-USD')]} alt={pair} style={{ width: '23px', marginRight: '13px' }} />
-                {pair.replace('usdt', '').toUpperCase()}
-              </td>
-              {exchanges.map((exchange) => {
-                const price = prices[exchange.toLowerCase()][pair];
-                return (
-                  <td key={`${exchange}-${pair}`} style={rowStyle}>
-                    {price !== 'Loading...' ? `$${price}` : 'Loading...'}
-                  </td>
-                );
-              })}
-              <td style={rowStyle}>
-                <>
-                  <span className="text-success fw-bold">{minPriceData.name}</span>
-                  {' - '}
-                  <span className="text-danger fw-bold">{maxPriceData.name}</span>
-                  {': '}
-                  <span className="text-dark fw-bold">{diffPercentage}%</span>
-                </>
-              </td>
-            </tr>
-          );
-        })}
-        {/* <--Content Collumns--> */}  
-        </tbody>
-      </table>
+          {/* <--Content Collumns--> */}
+          <tbody className="border border-black">
+            {pairs.map((pair, index) => {
+            const priceData = exchanges.map((exchange) => ({
+              name: exchange,
+              price: parseFloat(prices[exchange.toLowerCase()][pair]),
+            })).filter(({ price }) => !isNaN(price));
+            if (priceData.length === 0) return <tr key={`${pair}-${index}`}><td colSpan="exchanges.length + 2">Fetching</td></tr>;
+            const minPriceData = priceData.reduce((min, data) => (data.price < min.price ? data : min), priceData[0]);
+            const maxPriceData = priceData.reduce((max, data) => (data.price > max.price ? data : max), priceData[0]);
+            const diffPercentage = (((maxPriceData.price - minPriceData.price) / minPriceData.price) * 100).toFixed(2);
+            const rowStyle = {
+              backgroundColor: diffPercentage > 0.999 ? '#78FF8D ' : diffPercentage > 0.499 ? '#FFCB5E' : '#FBFBFB',
+            };
+            {/* <--Filter Logic--> */} 
+            if (filterBadDeals && diffPercentage < 0.5) {
+              return null;
+            }
+            {/* <--Filter Logic--> */} 
+            return (
+              <tr key={`${pair}-${index}`}>
+                <td style={rowStyle}>
+                  <img src={logos[pair.toUpperCase().replace('USDT', '-USD')]} alt={pair} style={{ width: '23px', marginRight: '13px' }} />
+                  {pair.replace('usdt', '').toUpperCase()}
+                </td>
+                {exchanges.map((exchange) => {
+                  const price = prices[exchange.toLowerCase()][pair];
+                  return (
+                    <td key={`${exchange}-${pair}`} style={rowStyle}>
+                      {price !== 'Loading...' ? `$${price}` : 'Loading...'}
+                    </td>
+                  );
+                })}
+                <td style={rowStyle}>
+                  <>
+                    <span className="text-success fw-bold">{minPriceData.name}</span>
+                    {' - '}
+                    <span className="text-danger fw-bold">{maxPriceData.name}</span>
+                    {': '}
+                    <span className="text-dark fw-bold">{diffPercentage}%</span>
+                  </>
+                </td>
+              </tr>
+            );
+          })}  
+          </tbody>
+          {/* <--Content Collumns--> */}
+        </table>
+      </div>
     </div>
   );   
 };

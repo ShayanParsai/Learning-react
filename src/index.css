@@ -38,6 +38,16 @@
   overflow: hidden;
 }
 
-.background-ofall { /* Background colour of whole page */
-  background-color: #afafaf; /* Adjust the color code to achieve the desired very light gray */
+.background-of-all { /* Background colour of whole page */
+  background-color: #c9c9c9; /* Adjust the color code to achieve the desired very light gray */
+}
+
+.crypto-address { /* Support me crypto adresses */
+  word-break: break-all;
+  white-space: pre-wrap; 
+  font-size: 20px;
+}
+
+.minimum-height {
+  min-height: 575px;
 }
