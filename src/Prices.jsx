@@ -381,6 +381,7 @@ const Prices = () => {
             name: exchange,
             price: parseFloat(prices[exchange.toLowerCase()][pair]),
           })).filter(({ price }) => !isNaN(price));
+
           if (priceData.length === 0) return <tr key={`${pair}-${index}`}><td colSpan="exchanges.length + 2">Fetching</td></tr>;
           const minPriceData = priceData.reduce((min, data) => (data.price < min.price ? data : min), priceData[0]);
           const maxPriceData = priceData.reduce((max, data) => (data.price > max.price ? data : max), priceData[0]);
