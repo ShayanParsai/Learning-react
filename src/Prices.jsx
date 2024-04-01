@@ -46,6 +46,26 @@ import dydxLogo from './assets/DYDX-USD.png';
 import strkLogo from './assets/STRK-USD.png';
 import snxLogo from './assets/SNX-USD.png';
 import pythLogo from './assets/PYTH-USD.png';
+import qntLogo from './assets/QNT-USD.png';
+import wifLogo from './assets/WIF-USD.png';
+import vetLogo from './assets/VET-USD.png';
+import enjLogo from './assets/ENJ-USD.png';
+import batLogo from './assets/BAT-USD.png';
+import zecLogo from './assets/ZEC-USD.png';
+import omgLogo from './assets/OMG-USD.png';
+import xtzLogo from './assets/XTZ-USD.png';
+import compLogo from './assets/COMP-USD.png';
+import zilLogo from './assets/ZIL-USD.png';
+import kncLogo from './assets/KNC-USD.png';
+import bandLogo from './assets/BAND-USD.png';
+import cakeLogo from './assets/CAKE-USD.png';
+import crvLogo from './assets/CRV-USD.png';
+import inchLogo from './assets/1INCH-USD.png';
+import sushiLogo from './assets/SUSHI-USD.png';
+import yfiLogo from './assets/YFI-USD.png';
+import lunaLogo from './assets/LUNA-USD.png';
+import celoLogo from './assets/CELO-USD.png';
+import chzLogo from './assets/CHZ-USD.png';
 
 const initializePrices = (pairs, exchanges) => { // Dynamically initialize prices for each exchange and pair
   const initialPrices = {};
@@ -105,7 +125,27 @@ const Prices = () => {
     'DYDX-USD': dydxLogo,
     'STRK-USD': strkLogo,
     'SNX-USD': snxLogo,
-    'PYTH-USD' : pythLogo
+    'PYTH-USD' : pythLogo,
+    'QNT-USD' : qntLogo,
+    'WIF-USD' : wifLogo,
+    'VET-USD': vetLogo,
+    'ENJ-USD': enjLogo,
+    'BAT-USD': batLogo,
+    'ZEC-USD': zecLogo,
+    'OMG-USD': omgLogo,
+    'XTZ-USD': xtzLogo,
+    'COMP-USD': compLogo,
+    'ZIL-USD': zilLogo,
+    'KNC-USD': kncLogo,
+    'BAND-USD': bandLogo,
+    'CAKE-USD': cakeLogo,
+    'CRV-USD': crvLogo,
+    '1INCH-USD': inchLogo,
+    'SUSHI-USD': sushiLogo,
+    'YFI-USD': yfiLogo,
+    'LUNA-USD': lunaLogo,
+    'CELO-USD': celoLogo,
+    'CHZ-USD': chzLogo
   };
   const pairs = [ // All pairs
     'btcusdt', 'ethusdt', 'solusdt',
@@ -115,7 +155,10 @@ const Prices = () => {
     'arbusdt', 'imxusdt', 'rndrusdt', 'grtusdt', 'opusdt', 'injusdt', 
     'ftmusdt', 'mkrusdt', 'ldousdt', 'tiausdt', 'fetusdt', 'suiusdt', 
     'algousdt', 'seiusdt', 'flowusdt', 'galausdt', 'aaveusdt', 'egldusdt', 
-    'dydxusdt', 'strkusdt', 'snxusdt','pythusdt'
+    'dydxusdt', 'strkusdt', 'snxusdt','pythusdt', 'qntusdt', 'wifusdt', 
+    'vetusdt', 'enjusdt', 'batusdt', 'zecusdt', 'omgusdt', 'xtzusdt', 
+    'compusdt', 'zilusdt', 'kncusdt', 'bandusdt', 'cakeusdt', 'crvusdt', '1inchusdt', 'sushiusdt', 'yfiusdt', 
+    'lunausdt', 'celousdt', 'chzusdt'
   ]; 
 
   const exchanges = ['Binance', 'Bybit', 'Mexc', 'Coinbase']; // List of exchanges
@@ -261,8 +304,13 @@ const Prices = () => {
     };
 
     // Closing down all Websockets
-    return () => mexcWs.close();});
-    return () => { binanceWs.close(); bybitWs.close(); coinbaseWs.close();};
+    return () => {
+      binanceWs.close();
+      bybitWs.close();
+      coinbaseWs.close();
+      mexcWs.close();
+    };
+  });
 }, []);
 
   return ( // The Table setup
