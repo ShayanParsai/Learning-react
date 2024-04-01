@@ -117,7 +117,8 @@ const Prices = () => {
     'algousdt', 'seiusdt', 'flowusdt', 'galausdt', 'aaveusdt', 'egldusdt', 
     'dydxusdt', 'strkusdt', 'snxusdt','pythusdt'
   ]; 
-  const exchanges = ['Binance', 'Bybit', 'Mexc']; // List of exchanges
+
+  const exchanges = ['Binance', 'Bybit', 'Mexc', 'Coinbase']; // List of exchanges
   const [prices, setPrices] = useState(initializePrices(pairs, exchanges));
 
   const [filterBadDeals, setFilterBadDeals] = useState(false); // Filter Button
@@ -138,7 +139,35 @@ const Prices = () => {
         }
     };
 
-    const binanceWs = new WebSocket('wss://stream.binance.com:9443/stream');     // Binance WebSocket Setup
+    const coinbaseWs = new WebSocket('wss://ws-feed.exchange.coinbase.com'); // Coinbase WebSocket Setup
+    const coinbasePairs = pairs.map(pair => pair.toUpperCase().replace('USDT', '-USDT'));
+    coinbaseWs.onopen = () => {
+        coinbaseWs.send(JSON.stringify({
+            type: 'subscribe',
+            product_ids: coinbasePairs,
+            channels: ['ticker']
+        }));
+    };
+    coinbaseWs.onmessage = (event) => {
+        const message = JSON.parse(event.data);
+        if (message.type === 'ticker' && message.product_id) {
+            const pair = message.product_id;
+            const price = parseFloat(message.price);
+            const decimalPlaces = getDecimalPlaces(price);
+            setPrices(prevPrices => ({
+                ...prevPrices,
+                coinbase: {
+                    ...prevPrices.coinbase,
+                    [pair.replace('-', '').toLowerCase()]: price.toFixed(decimalPlaces),
+                },
+            }));
+        }
+    };
+    coinbaseWs.onerror = (error) => {
+        console.error('Coinbase WebSocket Error:', error);
+    };
+
+    const binanceWs = new WebSocket('wss://stream.binance.com:9443/stream'); // Binance WebSocket Setup
     binanceWs.onopen = () => {
         binanceWs.send(JSON.stringify({
             method: "SUBSCRIBE",
@@ -233,7 +262,7 @@ const Prices = () => {
 
     // Closing down all Websockets
     return () => mexcWs.close();});
-    return () => { binanceWs.close(); bybitWs.close();};
+    return () => { binanceWs.close(); bybitWs.close(); coinbaseWs.close();};
 }, []);
 
   return ( // The Table setup
@@ -287,7 +316,7 @@ const Prices = () => {
                   const price = prices[exchange.toLowerCase()][pair];
                   return (
                     <td key={`${exchange}-${pair}`} style={rowStyle}>
-                      {price !== 'Loading...' ? `$${price}` : 'Loading...'}
+                      {price !== 'Loading...' ? `$${price}` : '-'}
                     </td>
                   );
                 })}

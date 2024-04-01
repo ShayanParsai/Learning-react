@@ -15,7 +15,8 @@
     }
     .custom-table td:nth-child(2), .custom-table th:nth-child(2), /* Hide prices on mobile */
     .custom-table td:nth-child(3), .custom-table th:nth-child(3),
-    .custom-table td:nth-child(4), .custom-table th:nth-child(4) {
+    .custom-table td:nth-child(4), .custom-table th:nth-child(4),
+    .custom-table td:nth-child(5), .custom-table th:nth-child(5) {
       display: none;
     }
     #donation-counter {
