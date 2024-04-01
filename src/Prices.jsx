@@ -147,7 +147,7 @@ const Prices = () => {
     'CELO-USD': celoLogo,
     'CHZ-USD': chzLogo
   };
-  const pairs = [ // All pairs
+  const pairs = [ // Pairs for all other exchanges
     'btcusdt', 'ethusdt', 'solusdt',
     'axsusdt', 'dogeusdt', 'xrpusdt', 'sandusdt', 'manausdt', 'avaxusdt', 'ltcusdt',
     'linkusdt', 'adausdt', 'icpusdt', 'dotusdt', 'xlmusdt', 'uniusdt', 'nearusdt', 
@@ -159,8 +159,21 @@ const Prices = () => {
     'vetusdt', 'enjusdt', 'batusdt', 'zecusdt', 'omgusdt', 'xtzusdt', 
     'compusdt', 'zilusdt', 'kncusdt', 'bandusdt', 'cakeusdt', 'crvusdt', '1inchusdt', 'sushiusdt', 'yfiusdt', 
     'lunausdt', 'celousdt', 'chzusdt'
-  ]; 
-
+  ];
+  const coinbasePairs = [ // Pairs for coinbase, some USD some USDT
+    'BTC-USDT', 'ETH-USDT', 'SOL-USDT', 'AXS-USDT', 'DOGE-USDT',
+    'XRP-USDT', 'SAND-USDT', 'MANA-USD', 'AVAX-USDT', 'LTC-USD',
+    'LINK-USDT', 'ADA-USDT', 'ICP-USDT', 'DOT-USDT', 'XLM-USDT',
+    'UNI-USD', 'NEAR-USDT', 'MATIC-USDT', 'BCH-USD', 'APT-USDT',
+    'FIL-USD', 'ETC-USD', 'ATOM-USDT', 'ARB-USD', 'IMX-USDT',
+    'RNDR-USDT', 'GRT-USD', 'OP-USDT', 'INJ-USD', 'MKR-USD',
+    'LDO-USD', 'TIA-USD', 'FET-USDT', 'SUI-USD', 'ALGO-USD',
+    'SEI-USD', 'FLOW-USDT', 'AAVE-USD', 'EGLD-USD', 'STRK-USD',
+    'SNX-USD', 'QNT-USDT', 'VET-USD', 'ENJ-USDT', 'BAT-USD',
+    'ZEC-USD', 'XTZ-USD', 'COMP-USD', 'KNC-USD', 'BAND-USD',
+    'CRV-USD', '1INCH-USD', 'SUSHI-USD', 'YFI-USD', 'CHZ-USDT'
+  ];
+ 
   const exchanges = ['Binance', 'Bybit', 'Mexc', 'Coinbase']; // List of exchanges
   const [prices, setPrices] = useState(initializePrices(pairs, exchanges));
 
@@ -183,28 +196,37 @@ const Prices = () => {
     };
 
     const coinbaseWs = new WebSocket('wss://ws-feed.exchange.coinbase.com'); // Coinbase WebSocket Setup
-    const coinbasePairs = pairs.map(pair => pair.toUpperCase().replace('USDT', '-USDT'));
-    coinbaseWs.onopen = () => {
+    coinbaseWs.onopen = () => { // Differates USD and USDT pairs, lists them as USDT
         coinbaseWs.send(JSON.stringify({
             type: 'subscribe',
             product_ids: coinbasePairs,
             channels: ['ticker']
         }));
     };
+    const coinbasePairMapping = coinbasePairs.reduce((acc, pair) => {
+      const stateKey = pair.toLowerCase().replace('-usdt', 'usdt').replace('-usd', 'usdt');
+      acc[pair] = stateKey;
+      return acc;
+    }, {});
     coinbaseWs.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        if (message.type === 'ticker' && message.product_id) {
-            const pair = message.product_id;
-            const price = parseFloat(message.price);
-            const decimalPlaces = getDecimalPlaces(price);
-            setPrices(prevPrices => ({
-                ...prevPrices,
-                coinbase: {
-                    ...prevPrices.coinbase,
-                    [pair.replace('-', '').toLowerCase()]: price.toFixed(decimalPlaces),
-                },
-            }));
+      const message = JSON.parse(event.data);
+      if (message.type === 'ticker' && message.product_id) {
+        const coinbasePair = message.product_id;
+        const stateKey = coinbasePairMapping[coinbasePair];
+        if (!stateKey) {
+          console.warn(`No mapping found for ${coinbasePair}, skipping update.`);
+          return;
         }
+        const price = parseFloat(message.price);
+        const decimalPlaces = getDecimalPlaces(price);
+        setPrices(prevPrices => ({
+          ...prevPrices,
+          coinbase: {
+            ...prevPrices.coinbase,
+            [stateKey]: price.toFixed(decimalPlaces),
+          },
+        }));
+      }
     };
     coinbaseWs.onerror = (error) => {
         console.error('Coinbase WebSocket Error:', error);
