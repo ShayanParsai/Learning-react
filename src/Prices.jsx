@@ -336,7 +336,7 @@ const Prices = () => {
 }, []);
 
   return ( // The Table setup
-    <div className="p-3 mt-4">
+    <div className="p-3 mt-4 minimum-height">
       <div className="container mb-5 border border-dark rounded-4 border-3 py-3 px-4 bg-light">
         {/* <--Filter Button--> */}
         <div className="d-flex justify-content-center mb-3">

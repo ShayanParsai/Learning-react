@@ -48,6 +48,6 @@
   font-size: 20px;
 }
 
-.minimum-height {
+.minimum-height { /* Min height of backrgound */
   min-height: 575px;
 }
