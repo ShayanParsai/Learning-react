@@ -13,7 +13,7 @@ function Header() {
                 <div className="collapse navbar-collapse" id="navmenu">
                     <ul className="navbar-nav ms-auto">
                         <li className="nav-item">
-                            <Link to="/" className="nav-link text-light text-stroke fw-bold">Start Tracking</Link>
+                            <Link to="/" className="TrackButton btn btn-primary text-stroke fw-bold mx-3" style={{ fontSize: '1.2rem', border: '2px solid black', color: 'white' }}>Start Tracking</Link>
                         </li>
                         <li className="nav-item">
                             <Link to="/how-it-works" className="nav-link text-light text-stroke fw-bold">How does it work?</Link>

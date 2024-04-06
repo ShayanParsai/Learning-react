@@ -22,4 +22,9 @@
     #donation-counter {
       display: none;
     }
+
+    .TrackButton{
+      margin-left: 0px !important;
+    }
+
   }
