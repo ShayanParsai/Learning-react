@@ -18,7 +18,7 @@ function Footer() {
                         <strong className="text-stroke text-light mobile-text">Twitter</strong>
                     </a>
                     <h2 className="text-center mb-3 flex-grow-1">
-                        <strong className="lead text-stroke">Copyright &copy; 2024. Arbitrage Tracker</strong>
+                        <strong className="lead text-stroke">Copyright © 2024. Arbitrage Tracker - Design By <span style="color: #467FF7;">Webfixer</span></strong>
                     </h2>
                 </div>
             </div>
